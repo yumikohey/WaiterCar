@@ -17,7 +17,6 @@ import {
 } from 'react-native';
 import { CardIOView, CardIOModule, CardIOUtilities } from 'react-native-awesome-card-io';
 import Invoice from './components/Invoice';
-import Success from './components/Success';
 
 import './shim.js'
 
@@ -40,7 +39,18 @@ export default class WaiterCar extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if(prevProps.madePayment !== this.state.madePayment){
-      return <Success />
+      setTimeout(() => {
+        this.setState({madePayment: false});
+      }, 8000) ;
+      return (
+        <View style={styles.container}>
+          <Image style={styles.background} source={require('./images/background.png')} resizeMode={'cover'} />
+          <Image style={{width: 100, height: 100, resizeMode: 'center'}} source={require('./images/check-white.png')}/>
+          <Text style={styles.subtitle}>
+            Thank you for using Robot to complete payments ;)
+          </Text>
+        </View>
+        )
     }
   }
 
@@ -102,54 +112,44 @@ export default class WaiterCar extends Component {
   }
 
   visaCheckout() {
-    CardIOModule
-      .scanCard()
-      .then(card => {
-        // the scanned card
-        console.log('scanned');
-        var paymentAuthorizationRequest = JSON.stringify({
-          "amount": "10",
-          "currency": "USD",
-          "payment": {
-            "cardNumber": "4111111111111111",
-            "cardExpirationMonth": "10",
-            "cardExpirationYear": "2016"
-          }
-        });
-        var apiKey = 'GC7JI68GHUYE6CLLA7CM21mxYdEXrwOlPd_bJ4LKCJkutKUQ0';
-        var baseUri = 'cybersource/';
-        var resourcePath = 'payments/v1/authorizations';
-        var queryParams = 'apikey=' + apiKey;
+      var paymentAuthorizationRequest = JSON.stringify({
+        "amount": "32",
+        "currency": "USD",
+        "payment": {
+          "cardNumber": "4111111111111111",
+          "cardExpirationMonth": "10",
+          "cardExpirationYear": "2016"
+        }
+      });
+      var apiKey = 'GC7JI68GHUYE6CLLA7CM21mxYdEXrwOlPd_bJ4LKCJkutKUQ0';
+      var baseUri = 'cybersource/';
+      var resourcePath = 'payments/v1/authorizations';
+      var queryParams = 'apikey=' + apiKey;
 
-        var timestamp = Math.floor(Date.now() / 1000);
-        var sharedSecret = 'OMUgXztUzV$9jM6bH8Dw23XtZ#q4i$Cz#gl}ufkP';
-        var preHashString = timestamp + resourcePath + queryParams + paymentAuthorizationRequest;
-        var hashString = crypto.createHmac('SHA256', sharedSecret).update(preHashString).digest('hex');
-        var preHashString2 = resourcePath + queryParams + paymentAuthorizationRequest;
-        var hashString2 = crypto.createHmac('SHA256', sharedSecret).update(preHashString2).digest('hex');
-        var xPayToken = 'xv2:' + timestamp + ':' + hashString;
-        console.log(xPayToken);
+      var timestamp = Math.floor(Date.now() / 1000);
+      var sharedSecret = 'OMUgXztUzV$9jM6bH8Dw23XtZ#q4i$Cz#gl}ufkP';
+      var preHashString = timestamp + resourcePath + queryParams + paymentAuthorizationRequest;
+      var hashString = crypto.createHmac('SHA256', sharedSecret).update(preHashString).digest('hex');
+      var preHashString2 = resourcePath + queryParams + paymentAuthorizationRequest;
+      var hashString2 = crypto.createHmac('SHA256', sharedSecret).update(preHashString2).digest('hex');
+      var xPayToken = 'xv2:' + timestamp + ':' + hashString;
+      console.log(xPayToken);
 
-        fetch('https://sandbox.api.visa.com/cybersource/payments/v1/authorizations?apikey='+apiKey, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-            'x-pay-token': xPayToken
-          },
-          body: paymentAuthorizationRequest
-        })
-        .then((response) => {
-          if(response.status === 201){
-            this.setState((prevState, props) => {
-              return {madePayment: !prevState.madePayment};
-            });
-            console.log(this.state.madePayment);
-          }
-        })
-
+      fetch('https://sandbox.api.visa.com/cybersource/payments/v1/authorizations?apikey='+apiKey, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-pay-token': xPayToken
+        },
+        body: paymentAuthorizationRequest
       })
-      .catch(() => {
-        // the user cancelled
+      .then((response) => {
+        if(response.status === 201){
+          this.setState((prevState, props) => {
+            return {madePayment: !prevState.madePayment};
+          });
+          console.log(this.state.madePayment);
+        }
       })
   }
 
@@ -168,10 +168,12 @@ export default class WaiterCar extends Component {
               </View>
             </TouchableOpacity>
             <Invoice />
-            <View style={styles.row}>
-              <Image style={{width: 200, height: 150, transform: [{scaleX: 1.5}, {scaleY: 1.5}], resizeMode: 'center', marginLeft: -10}} source={require('./images/visa-checkout.png')} />
-              <Image style={{width: 100, height: 100, resizeMode: 'center', marginLeft: 10, marginTop: 30}} source={require('./images/qrCode.png')} />
-            </View>
+            <TouchableOpacity onPress={this.visaCheckout.bind(this)}>
+              <View style={styles.row}>
+                <Image style={{width: 220, height: 150, transform: [{scaleX: 1}, {scaleY: 1}], resizeMode: 'center', marginLeft: -10}} source={require('./images/visa-checkout.png')} />
+                <Image style={{width: 100, height: 100, resizeMode: 'center', marginLeft: 10, marginTop: 30}} source={require('./images/qrCode.png')} />
+              </View>
+            </TouchableOpacity>
             <CardIOView
               didScanCard={this.didScanCard}
               style={{ flex: 1 }}

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, Text } from 'react-native';
 import { CardIOModule, CardIOUtilities } from 'react-native-awesome-card-io';
-import Success from './Success';
 import '../shim.js'
 
 var crypto = require('crypto');

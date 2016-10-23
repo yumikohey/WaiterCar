@@ -49,13 +49,6 @@ export default class Invoice extends Component {
 
 const styles = StyleSheet.create({
   list: {
-    shadowColor: "#000",
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    shadowOffset: {
-      height: -3,
-      width: 0
-    },
     backgroundColor: 'rgba(0,0,0,0.2)'
   },
   row: {
@@ -77,37 +70,32 @@ const styles = StyleSheet.create({
   total: {
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderColor: 'transparent',
     borderWidth: 1,
     borderBottomRightRadius: 5,
     borderBottomLeftRadius: 5,
-    shadowColor: "#000",
-    shadowOpacity: 0.8,
     shadowRadius: 2,
     shadowOffset: {
       height: -3,
       width: 0
     },
-    backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'flex-end'
   },
   listTitle: {
     marginTop: 50,
     flexDirection: 'row',
     padding: 10,
-    backgroundColor: 'transparent',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     borderColor: 'transparent',
     borderWidth: 1,
     shadowColor: "#000",
-    shadowOpacity: 0.8,
     borderTopRightRadius: 5,
     borderTopLeftRadius: 5,
     shadowOffset: {
       height: -3,
       width: 0
     },
-    backgroundColor: 'rgba(0,0,0,0.2)',
     justifyContent: 'center'
   }
 });
